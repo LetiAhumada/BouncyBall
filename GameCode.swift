@@ -1,6 +1,6 @@
 import Foundation
 
-let circle1 = OvalShape(width: 40, height: 40)
+let ball = OvalShape(width: 40, height: 40)
 //barrier
 let barrierWidth = 300.0
 let barrierHeight = 25.0
@@ -51,10 +51,15 @@ of a function.
 */
 
 func setup() {
-    circle1.position = Point(x:250, y:400)
-    circle1.hasPhysics = true
-    circle1.fillColor = .yellow
-    scene.add(circle1)
+    ball.position = Point(x:250, y:400)
+    ball.hasPhysics = true
+    ball.isDraggable = false
+    ball.fillColor = .yellow
+    scene.add(ball)
+    scene.trackShape(ball)
+    ball.onExitedScene = ballExistedScene
+    ball.onCollision = ballCollided(with:)
+    ball.onTapped = resetGame
     //barrier code
     barrier.position = Point(x: 200, y: 150)
     barrier.hasPhysics = true
@@ -69,15 +74,25 @@ func setup() {
     funnel.onTapped = dropBall
     //target code
     setupTarget()
-    // collisions
-
+    //reset
+    resetGame()
 }
 
 func dropBall() {
-    circle1.position = funnel.position
+    ball.position = funnel.position
+    ball.stopAllMotion()
+    barrier.isDraggable = false
 }
 
 func ballCollided(with otherShape: Shape) {
     if otherShape.name != "target" { return }
-    otherShape.fillColor = .red
+    otherShape.fillColor = .yellow
+}
+
+func ballExistedScene() {
+    barrier.isDraggable = true
+}
+
+func resetGame() {
+    ball.position = Point(x: 0, y: -80)
 }
